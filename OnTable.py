@@ -1,7 +1,10 @@
 from Predicate import Predicate
-from PutdownOp import PutdownOp
+from PutDownOp import PutdownOp
 
 
+# Predicate OnTable defining block X is on the table
+# NOTE : OnTable is not compatible with On
+# Example : On(X, Y), X can't be on the table
 class OnTable(Predicate):
     def __init__(self, X):
         self.X = X
@@ -32,6 +35,3 @@ class OnTable(Predicate):
 
     def __hash__(self):
         return hash(str(self))
-
-    def get_action(self, world_state):
-        return PutdownOp(self.X)

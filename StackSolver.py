@@ -3,11 +3,12 @@ from Clear import Clear
 from Holding import Holding
 from On import On
 from OnTable import OnTable
+from PickUpOnTopOp import PickUpOnTopOp
 from PickupOp import PickupOp
-from PutdownOp import PutdownOp
-from PutDownOnTop import PutDownOnTop
+from PutDownOnTopOp import PutDownOnTopOp
+from PutDownOp import PutdownOp
 
-
+# NodeSearch is a class representing a node for A*
 class NodeSearch:
     def __init__(self, data=None, opera=None, gscore=0, fscore=0, prevNode=None, links=None):
         if opera is None:
@@ -19,7 +20,7 @@ class NodeSearch:
         self.data = data  # contains a list of all predicate on state
         self.opera = opera  # Contains operation applied on node
         self.gscore = gscore  # total cost of node
-        self.fscore = fscore  # total cost + heuristic
+        self.fscore = fscore  # heuristic
         self.previousNode = prevNode
         self.links = links  # List of neighbors of node
 
@@ -33,6 +34,7 @@ class NodeSearch:
         return self.fscore <= other.fscore
 
 
+# Method to know if l1 is contained in l2
 def contains_in_list(l1, l2):
     for i in l1:
         if i not in l2:
@@ -40,6 +42,7 @@ def contains_in_list(l1, l2):
     return True
 
 
+# Method to know if l1 is not contained in l2
 def not_contains_in_list(l1, l2):
     for i in l1:
         if i in l2:
@@ -47,6 +50,7 @@ def not_contains_in_list(l1, l2):
     return True
 
 
+# Method defining A* heuristic
 def heuristic(node1: list, node2: list):
     count = 0
     for i in node1:
@@ -55,35 +59,31 @@ def heuristic(node1: list, node2: list):
     return len(node2) - count
 
 
+# Method defining A* cost between 2 node
 def cost(node1: NodeSearch = None, node2: NodeSearch = None):
     return 1
 
 
+# Method to verify if goal is attained
 def is_goal_reached(current, goal):
     return current == goal
 
 
-def select_min_h(open: [NodeSearch]):
-    hlist = []
-    fscore = open[0].fscore
-    for i in open:
-        if i.fscore == fscore:
-            hlist.append(i)
-    return hlist
-
-
+# Main class to solve stacking problem
 class StackSolver:
+    # Class defining A*
     class AStar:
         def __init__(self, goal=None, elements=None):
             if goal is None:
                 goal = list()
             if elements is None:
                 elements = None
-            self.goal = goal
-            self.open = list()
-            self.close = list()
+            self.goal = goal # Goal State
+            self.open = list() # Open Node
+            self.close = list() # Close Node
             self.elements = elements # Necessary to search for neighbors
 
+        # Method returning a list of neighbors (i + 1) of node i
         def neighbors(self, node: NodeSearch):
             neighbors = []
             gscore = node.gscore
@@ -113,9 +113,10 @@ class StackSolver:
                                       fscore=heuristic(tempData2, self.goal), prevNode=node)
                     neighbors.append(node2)
 
+                # Managing every operation with 2 variables
                 for j in self.elements:
                     if i != j:
-                        # PickOnTop
+                        # PickUpOnTopOp
                         # Case Where : On(X,Y) and Clear(X) and ArmEmpty() -> Holding(X) and Clear(Y)
                         if contains_in_list([ArmEmpty(), On(i, j), Clear(i)], node.data):
                             tempData3 = node.data.copy()
@@ -124,11 +125,11 @@ class StackSolver:
                             tempData3.remove(Clear(i))
                             tempData3.append(Holding(i))
                             tempData3.append(Clear(j))
-                            node3 = NodeSearch(data=tempData3, opera=PutDownOnTop(i, j), gscore=(gscore + cost()),
-                                              fscore=heuristic(tempData3, self.goal), prevNode=node)
+                            node3 = NodeSearch(data=tempData3, opera=PickUpOnTopOp(i, j), gscore=(gscore + cost()),
+                                               fscore=heuristic(tempData3, self.goal), prevNode=node)
                             neighbors.append(node3)
 
-                        # PutDownOnTop
+                        # PutDownOnTopOp
                         # Case Where : Holding(X) and Clear(Y) -> On(X,Y) and Clear(X) and ArmEmpty()
                         if contains_in_list([Holding(i), Clear(j)], node.data):
                             tempData4 = node.data.copy()
@@ -137,47 +138,63 @@ class StackSolver:
                             tempData4.append(ArmEmpty())
                             tempData4.append(On(i, j))
                             tempData4.append(Clear(i))
-                            node4 = NodeSearch(data=tempData4, opera=PutDownOnTop(i, j), gscore=(gscore + cost()),
+                            node4 = NodeSearch(data=tempData4, opera=PutDownOnTopOp(i, j), gscore=(gscore + cost()),
                                               fscore=heuristic(tempData4, self.goal), prevNode=node)
                             neighbors.append(node4)
             return neighbors
 
+        # Main method to solve stacking problem
         def get_path_operation(self, start: list, goal: list):
 
             # We setup the first node
             startNode = NodeSearch(data=start, gscore=0, fscore=heuristic(start, goal))
             self.open.append(startNode)
 
+            # Infinit loop and only when there is nothing in open then we return an error
             while True:
+                # Loop to verify if solution is in close
                 for cnode in self.close:
                     if cnode.fscore == 0:
                         finalNode = cnode
                         operator = []
+                        # Get previous node to get path of solution
                         while finalNode.previousNode is not None:
+                            # We insert first because we go back through the node
                             operator.insert(0, finalNode.opera)
                             finalNode = finalNode.previousNode
                         return operator
 
+                # Exception to A*
                 if not self.open:
                     raise InterruptedError
                 else:
+                    # Getting 1st node of open
                     closeNode = self.open[0]
+                    # Removing from open and add to close
                     self.open.pop(0)
                     self.close.append(closeNode)
+                    # Get neighbors of node
                     closeNode.links = self.neighbors(closeNode)
+                    # Loop through all neighbors
                     for np in closeNode.links:
+                        # If node is not known then add to open
                         if np not in self.open and np not in self.close:
                             self.open.append(np)
                         else:
+                            # if node is in open or close
                             if np in self.open or np in self.close:
                                 inOpen = True if np in self.open else False
                                 index = self.open.index(np) if inOpen else self.close.index(np)
                                 cnode = self.open[index] if inOpen else self.close[index]
+                                # if the cost of the new node is < to the one known
                                 if cnode.gscore > np.gscore:
+                                    # Replace with the new node
                                     if inOpen:
                                         self.open.remove(cnode)
                                         self.open.append(np)
+                                    # remove from close and add to open
                                     else:
                                         self.close.remove(cnode)
                                         self.open.append(cnode)
+                        # Sort open list by heuristic
                         self.open.sort()

@@ -1,13 +1,13 @@
 from Operation import Operation
 
 
-# Class representing
-class PickupOp(Operation):
+class PutdownOp(Operation):
+
     def __init__(self, X):
         self.X = X
 
     def __str__(self):
-        return "PickUpOnTable({X})".format(X=self.X)
+        return "PutDownOnTable({X})".format(X=self.X)
 
     def __repr__(self):
         return self.__str__()

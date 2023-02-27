@@ -1,8 +1,10 @@
 from Predicate import Predicate
-from PutDownOnTop import PutDownOnTop
 from PickupOp import PickupOp
+from PutDownOnTopOp import PutDownOnTopOp
 
 
+# Class Holding defining that robot's arm is Holding X block
+# NOTE : ArmEmpty can't be in encodage if Holding(X) because it's a contradiction
 class Holding(Predicate):
 
     def __init__(self, X):
@@ -33,16 +35,3 @@ class Holding(Predicate):
 
     def __hash__(self):
         return hash(str(self))
-
-    def get_action(self, world_state):
-        X = self.X
-        # If block is on table, pick up
-        from OnTable import OnTable
-        if OnTable(X) in world_state:
-            return PickupOp(X)
-        # If block is on another block, unstack
-        else:
-            for predicate in world_state:
-                from On import On
-                if isinstance(predicate, On) and predicate.X == X:
-                    return PutDownOnTop(X, predicate.Y)

@@ -1,6 +1,5 @@
 from ArmEmpty import ArmEmpty
 from Clear import Clear
-from GoalStackPlanner import GoalStackPlanner
 from On import On
 from OnTable import OnTable
 from StackSolver import StackSolver
@@ -21,13 +20,6 @@ if __name__ == '__main__':
         Clear('A'),
         ArmEmpty()
     ]
-
-    print("============= Algo sans heuristique =============")
-
-    goal_stack = GoalStackPlanner(initial_state=initial_state, goal_state=goal_state)
-    steps = goal_stack.get_steps()
-    print("Steps = " + str(steps))
-    print("")
 
     print("============= Algorithme A* =============")
     elements.sort()

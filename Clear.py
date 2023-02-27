@@ -1,9 +1,12 @@
 from Predicate import Predicate
+from PutDownOnTopOp import PutDownOnTopOp
 
 
+# Predicate Clear defining X block which is clear
+# NOTE : On(X,Y), Y can't be Clear(Y) because X is on top of X so contradiction
 class Clear(Predicate):
     def __init__(self, X):
-        self.X = X
+        self.X = X # Block X
 
     def __str__(self):
         return "Clear({X})".format(X=self.X)
@@ -22,12 +25,3 @@ class Clear(Predicate):
 
     def __hash__(self):
         return hash(str(self))
-
-    def get_action(self, world_state):
-        for predicate in world_state:
-            # If Block is on another block, unstack
-            from On import On
-            if isinstance(predicate, On) and predicate.Y == self.X:
-                from PutDownOnTop import PutDownOnTop
-                return PutDownOnTop(X=predicate.X, Y=predicate.Y)
-        return None

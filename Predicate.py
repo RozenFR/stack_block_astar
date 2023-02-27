@@ -13,6 +13,3 @@ class Predicate:
 
     def __hash__(self):
         pass
-
-    def get_action(self, state):
-        pass

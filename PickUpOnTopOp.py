@@ -1,13 +1,15 @@
 from Operation import Operation
 
 
-# Class representing
-class PickupOp(Operation):
-    def __init__(self, X):
+# Operation pick up on top defining relation which define
+# robot's arm is picking block
+class PickUpOnTopOp(Operation):
+    def __init__(self, X, Y):
         self.X = X
+        self.Y = Y
 
     def __str__(self):
-        return "PickUpOnTable({X})".format(X=self.X)
+        return "PickUpOnTop({X},{Y})".format(X=self.X, Y=self.Y)
 
     def __repr__(self):
         return self.__str__()

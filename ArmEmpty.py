@@ -1,12 +1,11 @@
 from Predicate import Predicate
 from Holding import Holding
-from PutdownOp import PutdownOp
+from PutDownOp import PutdownOp
 
 
+# Predicate ArmEmpty defining when robot's arm is empty
+# NOTE : ArmEmpty can't be in encoding if Holding(X) because contradiction
 class ArmEmpty(Predicate):
-
-    def __init__(self):
-        self.X = None
 
     def __str__(self):
         return "ArmEmpty"
@@ -22,9 +21,3 @@ class ArmEmpty(Predicate):
 
     def __hash__(self):
         return hash(str(self))
-
-    def get_action(self, world_state=[]):
-        for predicate in world_state:
-            if isinstance(predicate, Holding):
-                return PutdownOp(predicate.X)
-        return None

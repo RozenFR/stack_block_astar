@@ -1,3 +1,5 @@
+# Class defining Operation
+# NOTE : This permit to tell which method to overload and abstract method
 class Operation:
     def __str__(self):
         pass
@@ -6,13 +8,4 @@ class Operation:
         pass
 
     def __eq__(self, other):
-        pass
-
-    def precondition(self):
-        pass
-
-    def delete(self):
-        pass
-
-    def add(self):
         pass

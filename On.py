@@ -1,7 +1,7 @@
+from PickUpOnTopOp import PickUpOnTopOp
 from Predicate import Predicate
-from StackOp import StackOp
 
-
+# Predicate On defining bloc X is on top of Y
 class On(Predicate):
     def __init__(self, X, Y):
         self.X = X
@@ -33,6 +33,3 @@ class On(Predicate):
 
     def __hash__(self):
         return hash(str(self))
-
-    def get_action(self, state):
-        return StackOp(self.X, self.Y)
