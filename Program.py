@@ -21,7 +21,7 @@ if __name__ == '__main__':
         ArmEmpty()
     ]
 
-    print("============= Algorithme A* =============")
+    print("============= Algorithme A* V1=============")
     elements.sort()
     initial_state.sort()
     goal_state.sort()
@@ -30,3 +30,14 @@ if __name__ == '__main__':
     output = "Chemin Algorithme A* : "
     for i in operatorPath:
         print(str(i))
+
+    print("============= Algorithme A* V2 =============")
+    initial_state.sort()
+    goal_state.sort()
+    stackSolver2 = StackSolver.AStar2(goal=goal_state, elements=elements)
+    operatorPath2 = stackSolver2.get_path_operation(initial_state, goal_state)
+    output = "Chemin Algorithme A* V2: "
+    for i in operatorPath2:
+        print(str(i))
+
+
